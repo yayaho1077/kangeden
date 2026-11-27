@@ -471,7 +471,7 @@
     <section class="profile-head" aria-label="프로필">
       <div class="avatar-wrap">
         <div class="avatar-placeholder" aria-hidden="true"><span>＋</span><small>PROFILE</small></div>
-        <img class="avatar" src="assets/avatar.jpg" alt="강이든 프로필 사진" onerror="this.style.display='none'">
+        <img class="avatar" src="assets/avatar.png" alt="강이든 프로필 사진" onerror="this.style.display='none'">
       </div>
       <div class="profile-info">
         <div class="name-row">
@@ -526,7 +526,7 @@
       <article class="viewer" role="dialog" aria-modal="true" aria-label="게시물">
         <header class="viewer-head">
           <button class="viewer-back" id="viewer-back" type="button" aria-label="피드로 돌아가기">‹</button>
-          <img class="viewer-avatar" src="assets/avatar.jpg" alt="" onerror="this.style.opacity='0'">
+          <img class="viewer-avatar" src="assets/avatar.png" alt="" onerror="this.style.opacity='0'">
           <span id="viewer-username">eden_kang</span>
         </header>
         <div class="viewer-image-wrap" id="viewer-image-wrap">
@@ -534,7 +534,7 @@
         </div>
         <section class="viewer-copy">
           <div class="viewer-caption">
-            <img class="viewer-avatar" src="assets/avatar.jpg" alt="" onerror="this.style.opacity='0'">
+            <img class="viewer-avatar" src="assets/avatar.png" alt="" onerror="this.style.opacity='0'">
             <p><strong id="caption-username">eden_kang</strong><span id="caption-text"></span><span class="caption-tags" id="caption-tags"></span></p>
           </div>
           <div class="viewer-comments" id="viewer-comments">댓글 모두 보기</div>
@@ -558,7 +558,7 @@
           <h2 class="dm-inbox-title">메시지</h2>
           <div class="dm-row-wrap">
             <button class="dm-row" id="open-chat" type="button" aria-label="harin_jin 대화 열기">
-              <img class="dm-avatar" src="assets/new-photo.jpg" alt="" onerror="this.style.opacity='0'">
+              <img class="dm-avatar" src="assets/new-photo.png" alt="" onerror="this.style.opacity='0'">
               <span class="dm-row-copy">
                 <span class="dm-row-name">harin_jin</span>
                 <span class="dm-row-preview">이따 얼굴 보러 갈게 기다려</span>
@@ -592,7 +592,7 @@
       <section class="dm-screen" id="dm-thread">
         <header class="dm-header dm-thread-header">
           <button class="dm-back" id="thread-back" type="button" aria-label="메시지 목록으로 돌아가기">‹</button>
-          <img class="dm-avatar small" src="assets/new-photo.jpg" alt="" onerror="this.style.opacity='0'">
+          <img class="dm-avatar small" src="assets/new-photo.png" alt="" onerror="this.style.opacity='0'">
           <strong>harin_jin</strong>
         </header>
         <div class="dm-messages" aria-label="harin_jin과의 메시지">
@@ -704,7 +704,7 @@
       post.dataset.final = 'true';
       post.setAttribute('aria-label', '새 게시물 보기');
       const photo = document.createElement('img');
-      photo.src = 'assets/new-photo.jpg';
+      photo.src = 'assets/new-photo.png';
       photo.alt = '새로 올라온 여성의 사진';
       photo.addEventListener('error', () => showPlaceholder(post), { once: true });
       post.append(photo);
