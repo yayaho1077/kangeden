@@ -1,0 +1,780 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#ffffff">
+  <title>eden_kang · Instagram</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --ink: #161616;
+      --muted: #737373;
+      --line: #dbdbdb;
+      --blue: #0095f6;
+      --page: #fff;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      color: var(--ink);
+      background: var(--page);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans KR", sans-serif;
+      -webkit-font-smoothing: antialiased;
+    }
+    button { color: inherit; font: inherit; }
+    .topbar {
+      height: 61px;
+      border-bottom: 1px solid var(--line);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: rgba(255,255,255,.96);
+    }
+    .topbar-inner {
+      width: min(100% - 40px, 975px);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .wordmark {
+      font-family: Georgia, "Times New Roman", serif;
+      font-weight: 700;
+      font-size: 25px;
+      letter-spacing: -.9px;
+    }
+    .top-actions { display: flex; align-items: center; gap: 18px; }
+    .top-actions svg { width: 24px; height: 24px; stroke: currentColor; fill: none; stroke-width: 1.8; }
+    .profile {
+      width: min(100% - 40px, 935px);
+      margin: 0 auto;
+    }
+    .profile-head {
+      display: grid;
+      grid-template-columns: 1fr 2fr;
+      align-items: center;
+      min-height: 270px;
+      padding: 35px 0 28px;
+    }
+    .avatar-wrap { position: relative; display: flex; justify-content: center; width: 150px; height: 150px; }
+    .avatar-placeholder {
+      position: absolute;
+      inset: 0;
+      display: grid;
+      align-content: center;
+      justify-items: center;
+      gap: 4px;
+      color: #aaa;
+      background: #f4f4f4;
+      border: 1px solid #dbdbdb;
+      border-radius: 50%;
+    }
+    .avatar-placeholder span { font-size: 25px; line-height: 1; }
+    .avatar-placeholder small { font-size: 8px; letter-spacing: .12em; }
+    .avatar {
+      position: relative;
+      z-index: 1;
+      width: 150px;
+      height: 150px;
+      object-fit: cover;
+      object-position: 50% 27%;
+      border-radius: 50%;
+      padding: 3px;
+      border: 1px solid #d7d7d7;
+    }
+    .profile-info { min-width: 0; }
+    .name-row, .stats, .profile-buttons { display: flex; align-items: center; }
+    .name-row { gap: 9px; flex-wrap: wrap; }
+    .username { margin: 0; font-size: 20px; font-weight: 400; letter-spacing: .1px; }
+    .verified { display: inline-grid; place-items: center; width: 15px; height: 15px; color: #fff; background: var(--blue); border-radius: 50%; font-size: 10px; font-weight: 800; }
+    .profile-buttons { gap: 8px; margin-left: 10px; }
+    .profile-button {
+      height: 32px;
+      padding: 0 16px;
+      border: 0;
+      border-radius: 8px;
+      background: #efefef;
+      font-size: 14px;
+      font-weight: 650;
+    }
+    .profile-button.following { background: #0095f6; color: #fff; }
+    .profile-button.icon { width: 35px; padding: 0; font-size: 20px; line-height: 1; }
+    .stats { gap: 38px; margin: 25px 0 21px; padding: 0; list-style: none; font-size: 15px; }
+    .stats strong { font-weight: 650; }
+    .bio { font-size: 14px; line-height: 1.55; }
+    .display-name { font-weight: 650; }
+    .bio-line { color: #333; }
+    .bio-link { color: #00376b; font-weight: 600; }
+    .tabs {
+      height: 53px;
+      border-top: 1px solid var(--line);
+      display: flex;
+      justify-content: center;
+      gap: 65px;
+    }
+    .tab {
+      position: relative;
+      display: grid;
+      place-items: center;
+      width: 45px;
+      color: #8e8e8e;
+    }
+    .tab.active { color: #262626; }
+    .tab.active::before { content: ""; position: absolute; left: 0; right: 0; top: -1px; height: 1px; background: #262626; }
+    .tab svg { width: 22px; height: 22px; fill: none; stroke: currentColor; stroke-width: 1.7; }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 4px;
+    }
+    .post {
+      position: relative;
+      display: block;
+      width: 100%;
+      aspect-ratio: 1;
+      overflow: hidden;
+      padding: 0;
+      border: 0;
+      background: #e8e5e1;
+      cursor: pointer;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .post img { display: block; width: 100%; height: 100%; object-fit: cover; transition: transform .45s ease, filter .35s ease; }
+    .post:hover img { transform: scale(1.035); }
+    .post:focus-visible { outline: 3px solid var(--blue); outline-offset: -3px; z-index: 2; }
+    .post .multi-icon { position: absolute; top: 10px; right: 10px; width: 20px; height: 20px; color: white; filter: drop-shadow(0 1px 3px #0007); }
+    .post .multi-icon svg { width: 100%; height: 100%; fill: none; stroke: currentColor; stroke-width: 1.8; }
+    .post-overlay {
+      position: absolute;
+      inset: 0;
+      display: grid;
+      place-items: center;
+      padding: 18px;
+      color: #fff;
+      background: rgba(19, 17, 17, .57);
+      opacity: 0;
+      transition: opacity .25s ease;
+    }
+    .post.is-deleting img { filter: grayscale(.7) brightness(.63); transform: scale(.96); }
+    .post.is-deleting .post-overlay { opacity: 1; }
+    .delete-message { text-align: center; text-shadow: 0 1px 8px #0007; }
+    .delete-message span { display: block; font-size: 12px; letter-spacing: .12em; }
+    .countdown { margin-top: 8px; font-size: 32px; font-weight: 300; font-variant-numeric: tabular-nums; }
+    .progress { position: absolute; left: 0; right: 0; bottom: 0; height: 3px; background: #ffffff60; }
+    .progress::after { content: ""; display: block; height: 100%; width: 0; background: #fff; }
+    .post.is-deleting .progress::after { animation: drain 3s linear forwards; }
+    @keyframes drain { to { width: 100%; } }
+    .post.is-removed { pointer-events: none; animation: vanish .4s ease forwards; }
+    @keyframes vanish { to { opacity: 0; transform: scale(.9); } }
+    .post.is-sweeping { pointer-events: none; animation: vanish .48s ease forwards; }
+    .post-view {
+      position: fixed;
+      inset: 0;
+      z-index: 30;
+      display: none;
+      place-items: center;
+      padding: 24px;
+      background: rgba(0,0,0,.72);
+    }
+    .post-view.show { display: grid; }
+    .delete-toast {
+      position: fixed;
+      z-index: 50;
+      left: 50%;
+      bottom: max(28px, env(safe-area-inset-bottom));
+      max-width: calc(100vw - 32px);
+      padding: 12px 19px;
+      border-radius: 8px;
+      color: #fff;
+      background: rgba(32,32,32,.94);
+      font-size: 14px;
+      opacity: 0;
+      pointer-events: none;
+      transform: translate(-50%, 10px);
+      transition: opacity .18s ease, transform .18s ease;
+      white-space: nowrap;
+    }
+    .delete-toast.show { opacity: 1; transform: translate(-50%, 0); }
+    .viewer {
+      position: relative;
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) 340px;
+      grid-template-rows: 58px minmax(0, 1fr);
+      width: min(920px, 96vw);
+      max-height: min(760px, 92vh);
+      overflow: hidden;
+      background: #fff;
+    }
+    .viewer-head {
+      grid-column: 2;
+      grid-row: 1;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 0 14px;
+      border-bottom: 1px solid #efefef;
+      font-size: 14px;
+      font-weight: 650;
+    }
+    .viewer-avatar { width: 30px; height: 30px; border-radius: 50%; object-fit: cover; background: #f0f0f0; }
+    .viewer-back {
+      width: 30px;
+      height: 34px;
+      margin-right: 2px;
+      padding: 0;
+      border: 0;
+      background: transparent;
+      font-size: 25px;
+      line-height: 1;
+      cursor: pointer;
+    }
+    .viewer-image-wrap {
+      grid-column: 1;
+      grid-row: 1 / 3;
+      display: grid;
+      place-items: center;
+      min-width: 0;
+      min-height: 0;
+      overflow: hidden;
+      background: #161616;
+    }
+    .viewer-image { display: block; width: 100%; height: 100%; object-fit: contain; transition: opacity .22s ease, transform .22s ease; }
+    .viewer-image.vanish { opacity: 0; transform: scale(.96); }
+    .viewer-copy {
+      grid-column: 2;
+      grid-row: 2;
+      display: flex;
+      flex-direction: column;
+      min-height: 0;
+      padding: 16px 15px 12px;
+    }
+    .viewer-caption { display: flex; gap: 10px; align-items: flex-start; font-size: 14px; line-height: 1.55; }
+    .viewer-caption p { margin: 0; }
+    .viewer-caption strong { margin-right: 5px; }
+    .caption-tags { display: block; margin-top: 4px; color: #00376b; }
+    .viewer-comments { margin-top: 16px; color: #737373; font-size: 13px; }
+    .viewer-spacer { flex: 1; min-height: 28px; }
+    .viewer-actions { padding-top: 12px; border-top: 1px solid #efefef; }
+    .action-icons { display: flex; gap: 15px; margin-bottom: 8px; font-size: 23px; line-height: 1; }
+    .viewer-likes { font-size: 13px; font-weight: 650; }
+    .viewer-time { margin-top: 6px; color: #8e8e8e; font-size: 10px; letter-spacing: .04em; }
+    .final-placeholder {
+      display: grid;
+      place-items: center;
+      width: 100%;
+      height: 100%;
+      min-height: 250px;
+      padding: 24px;
+      text-align: center;
+      color: #f8f4f0;
+      background: radial-gradient(ellipse at 50% 32%, #806b67 0, #423a3c 36%, #1d1d22 100%);
+    }
+    .final-placeholder .silhouette {
+      position: relative;
+      width: 90px;
+      height: 140px;
+      margin: 0 auto 16px;
+      opacity: .62;
+    }
+    .final-placeholder .silhouette::before { content: ""; position: absolute; top: 0; left: 29px; width: 34px; height: 42px; border-radius: 50%; background: #c9b7b4; }
+    .final-placeholder .silhouette::after { content: ""; position: absolute; bottom: 0; left: 7px; width: 78px; height: 92px; border-radius: 46% 46% 12% 12%; background: linear-gradient(120deg, #b49a98, #55484d); }
+    .final-placeholder span { display: block; font-size: 12px; letter-spacing: .08em; color: #e5d9d6; }
+    .post.final-post { cursor: pointer; }
+    .post.final-post .final-placeholder { position: absolute; inset: 0; }
+    .upload-pop { animation: upload-pop .55s cubic-bezier(.2,.8,.2,1) both; }
+    @keyframes upload-pop { from { opacity: 0; transform: scale(.92); } to { opacity: 1; transform: scale(1); } }
+    .dm-view {
+      position: fixed;
+      inset: 0;
+      z-index: 60;
+      display: none;
+      flex-direction: column;
+      background: #fff;
+    }
+    .dm-view.show { display: flex; }
+    .dm-screen { display: none; flex: 1; min-height: 0; flex-direction: column; }
+    .dm-screen.active { display: flex; }
+    .dm-header {
+      flex: 0 0 61px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      border-bottom: 1px solid var(--line);
+      font-size: 16px;
+      font-weight: 650;
+    }
+    .dm-back {
+      position: absolute;
+      left: max(18px, calc((100vw - 935px) / 2));
+      top: 50%;
+      width: 36px;
+      height: 38px;
+      transform: translateY(-50%);
+      border: 0;
+      background: none;
+      font-size: 29px;
+      cursor: pointer;
+    }
+    .dm-main {
+      width: min(100%, 935px);
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      margin: 0 auto;
+      min-height: 0;
+    }
+    .dm-avatar {
+      width: 78px;
+      height: 78px;
+      margin-bottom: 12px;
+      border: 1px solid #dbdbdb;
+      border-radius: 50%;
+      object-fit: cover;
+      background: #f1f1f1;
+    }
+    .dm-avatar.small { width: 32px; height: 32px; margin: 0; }
+    .dm-inbox-content { width: min(100%, 935px); flex: 1; margin: 0 auto; }
+    .dm-inbox-title { margin: 0; padding: 22px 20px 14px; font-size: 17px; font-weight: 650; }
+    .dm-row {
+      display: flex;
+      align-items: center;
+      width: 100%;
+      gap: 12px;
+      padding: 12px 20px;
+      border: 0;
+      background: #fff;
+      text-align: left;
+      cursor: pointer;
+      transition: transform .48s ease, opacity .48s ease;
+    }
+    .dm-row-wrap { position: relative; overflow: hidden; background: #fff; }
+    .dm-row-wrap.prune-target { background: #ff3040; }
+    .dm-row-wrap.prune-target::after {
+      content: "삭제";
+      position: absolute;
+      inset: 0 0 0 auto;
+      display: grid;
+      place-items: center;
+      width: 76px;
+      color: #fff;
+      background: #ff3040;
+      font-size: 14px;
+      font-weight: 650;
+      opacity: 0;
+      transition: opacity .18s ease;
+    }
+    .dm-row-wrap.prune-target.is-deleting::after { opacity: 1; }
+    .dm-row-wrap.is-deleting .dm-row { transform: translateX(-76px); opacity: 0; }
+    .dm-inbox-content.pruning #open-chat { pointer-events: none; }
+    .dm-row .dm-avatar { flex: 0 0 56px; width: 56px; height: 56px; margin: 0; }
+    .dm-row .dm-avatar-placeholder { display: grid; place-items: center; color: #fff; background: linear-gradient(145deg, #8f7c9f, #4c5365); font-size: 20px; font-weight: 600; }
+    .dm-row-copy { min-width: 0; flex: 1; }
+    .dm-row-name { display: block; margin-bottom: 4px; font-size: 14px; font-weight: 600; }
+    .dm-row-preview { display: block; overflow: hidden; color: #737373; font-size: 13px; text-overflow: ellipsis; white-space: nowrap; }
+    .dm-row-time { align-self: flex-start; margin-top: 3px; color: #8e8e8e; font-size: 11px; white-space: nowrap; }
+    .dm-unread { margin: 12px 20px; color: #8e8e8e; font-size: 12px; text-align: center; }
+    .dm-thread-header { justify-content: flex-start; gap: 10px; padding: 0 20px; }
+    .dm-thread-header .dm-back { position: static; flex: 0 0 36px; transform: none; }
+    .dm-thread-header strong { font-size: 14px; }
+    .dm-messages { flex: 1; display: flex; flex-direction: column; gap: 12px; padding: 20px 18px 16px; overflow-y: auto; }
+    .dm-time { margin: 0 auto 8px; color: #8e8e8e; font-size: 11px; }
+    .dm-bubble { max-width: min(78%, 430px); padding: 12px 15px; border-radius: 20px; font-size: 14px; line-height: 1.5; }
+    .dm-bubble.incoming { align-self: flex-start; border: 1px solid #dbdbdb; background: #fff; }
+    .dm-bubble.outgoing { align-self: flex-end; color: #fff; background: linear-gradient(135deg, #7d46d8, #c3318e); }
+    .dm-speaker { display: block; margin-bottom: 3px; font-size: 10px; opacity: .7; }
+    .dm-unread { align-self: center; margin: 10px 0 0; color: #8e8e8e; font-size: 12px; }
+    .dm-compose { display: flex; align-items: center; gap: 10px; margin: 0 16px max(16px, env(safe-area-inset-bottom)); padding: 9px 14px; border: 1px solid #dbdbdb; border-radius: 22px; color: #8e8e8e; font-size: 14px; }
+    .dm-compose span { flex: 1; }
+    .dm-compose button { border: 0; background: transparent; color: var(--blue); font-size: 19px; }
+    .empty-state { display: none; padding: 58px 20px 76px; text-align: center; }
+    .empty-state.show { display: block; }
+    .empty-icon { width: 61px; height: 61px; margin: 0 auto 16px; border: 2px solid #262626; border-radius: 50%; display: grid; place-items: center; font-size: 30px; }
+    .empty-state h2 { margin: 0 0 9px; font-size: 20px; font-weight: 400; }
+    .empty-state p { margin: 0 0 20px; color: var(--muted); font-size: 14px; }
+    .reset-button { border: 0; padding: 8px 14px; border-radius: 7px; color: #fff; background: var(--blue); font-weight: 650; cursor: pointer; }
+    .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; border: 0; }
+    @media (min-width: 736px) {
+      .topbar-inner { width: min(100% - 40px, 975px); }
+      .profile { width: min(100% - 40px, 935px); }
+      .grid { gap: 4px; }
+      .post-overlay { background: rgba(19,17,17,.48); }
+    }
+    @media (max-width: 735px) {
+      .topbar { height: 53px; }
+      .topbar-inner { width: 100%; padding: 0 16px; }
+      .top-actions { gap: 14px; }
+      .profile { width: 100%; }
+      .profile-head { min-height: 0; grid-template-columns: 88px 1fr; grid-template-rows: auto auto auto; column-gap: 8px; row-gap: 0; padding: 24px 16px 20px; }
+      .avatar-wrap { width: 77px; height: 77px; }
+      .avatar-placeholder span { font-size: 18px; }
+      .avatar-placeholder small { font-size: 6px; }
+      .avatar { width: 77px; height: 77px; padding: 2px; }
+      .username { font-size: 18px; }
+      .avatar-wrap { grid-column: 1; grid-row: 1; align-self: start; }
+      .profile-info { display: contents; }
+      .name-row { grid-column: 2; grid-row: 1; align-self: start; }
+      .profile-buttons { width: 100%; margin: 7px 0 0; }
+      .profile-head .stats { position: static; grid-column: 1 / -1; grid-row: 2; justify-content: space-around; gap: 0; margin: 16px 0 13px; padding: 12px 8px; border-top: 1px solid #efefef; border-bottom: 1px solid #efefef; }
+      .profile-head .bio { grid-column: 1 / -1; grid-row: 3; }
+      .stats li { text-align: center; }
+      .stats strong { display: block; }
+      .bio { padding: 0; font-size: 13px; }
+      .tabs { height: 45px; gap: 0; justify-content: space-around; }
+      .tab { width: 33.333%; }
+      .grid { gap: 2px; }
+      .post .multi-icon { top: 7px; right: 7px; width: 16px; height: 16px; }
+      .post-overlay { padding: 8px; }
+      .delete-message span { font-size: 9px; letter-spacing: .08em; }
+      .countdown { margin-top: 4px; font-size: 25px; }
+      .post-view { display: none; padding: 0; background: #fff; }
+      .post-view.show { display: block; }
+      .viewer { display: grid; grid-template-columns: 1fr; grid-template-rows: 50px minmax(0, 1fr) auto; width: 100%; height: 100dvh; max-height: none; }
+      .viewer-head { grid-column: 1; grid-row: 1; padding: 0 12px; }
+      .viewer-image-wrap { grid-column: 1; grid-row: 2; min-height: 0; }
+      .viewer-copy { grid-column: 1; grid-row: 3; padding: 12px 14px max(12px, env(safe-area-inset-bottom)); }
+      .viewer-spacer { min-height: 8px; }
+      .viewer-comments { margin-top: 10px; }
+      .viewer-actions { padding-top: 9px; }
+      .final-placeholder { min-height: 0; }
+      .dm-header { flex-basis: 53px; }
+      .dm-back { left: 12px; }
+      .dm-row { padding: 12px 15px; }
+      .dm-inbox-title { padding: 20px 15px 12px; }
+      .dm-thread-header { padding: 0 10px; }
+      .dm-messages { padding: 18px 15px 14px; }
+    }
+    @media (max-width: 370px) {
+      .profile-head { grid-template-columns: 76px 1fr; padding-left: 12px; padding-right: 12px; }
+      .avatar-wrap { width: 68px; height: 68px; }
+      .avatar { width: 68px; height: 68px; }
+      .username { font-size: 16px; }
+      .profile-button { padding: 0 10px; font-size: 13px; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { scroll-behavior: auto !important; animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; }
+    }
+  </style>
+</head>
+<body>
+  <header class="topbar" aria-label="상단 메뉴">
+    <div class="topbar-inner">
+      <div class="wordmark">Instagram</div>
+      <div class="top-actions" aria-hidden="true">
+        <svg viewBox="0 0 24 24"><path d="M3 11.6 21 3l-6.8 18-3.5-7.7L3 11.6Z"/><path d="m10.7 13.3 5.1-5.1"/></svg>
+        <svg viewBox="0 0 24 24"><path d="M20.8 8.8c0 5.6-8.8 11-8.8 11s-8.8-5.4-8.8-11a4.6 4.6 0 0 1 8.8-1.7 4.6 4.6 0 0 1 8.8 1.7Z"/></svg>
+      </div>
+    </div>
+  </header>
+
+  <main class="profile">
+    <section class="profile-head" aria-label="프로필">
+      <div class="avatar-wrap">
+        <div class="avatar-placeholder" aria-hidden="true"><span>＋</span><small>PROFILE</small></div>
+        <img class="avatar" src="assets/avatar.jpg" alt="강이든 프로필 사진" onerror="this.style.display='none'">
+      </div>
+      <div class="profile-info">
+        <div class="name-row">
+          <h1 class="username">eden_kang</h1><span class="verified" aria-label="인증된 계정">✓</span>
+          <div class="profile-buttons">
+            <button class="profile-button following" type="button">팔로잉</button>
+            <button class="profile-button" id="open-dm" type="button">메시지</button>
+            <button class="profile-button icon" type="button" aria-label="더 보기">⌄</button>
+          </div>
+        </div>
+        <ul class="stats" aria-label="계정 통계">
+          <li><strong id="post-count">3</strong> 게시물</li>
+          <li><strong>300만</strong> 팔로워</li>
+          <li><strong>417</strong> 팔로잉</li>
+        </ul>
+        <div class="bio">
+          <div class="display-name">강이든</div>
+          <div class="bio-line">Korea National University · 체육교육학과</div>
+          <div class="bio-line">JUDO TEAMKOREA 🥋 &nbsp; | &nbsp; -90kg</div>
+          <div class="bio-line">올림픽 준비 중</div>
+          <div class="bio-link">#JUDO #TEAMKOREA</div>
+        </div>
+      </div>
+    </section>
+
+    <nav class="tabs" aria-label="게시물 종류">
+      <div class="tab active" aria-label="게시물 그리드">
+        <svg viewBox="0 0 24 24"><rect x="3.5" y="3.5" width="6" height="6"/><rect x="14.5" y="3.5" width="6" height="6"/><rect x="3.5" y="14.5" width="6" height="6"/><rect x="14.5" y="14.5" width="6" height="6"/></svg>
+      </div>
+      <div class="tab" aria-label="릴스">
+        <svg viewBox="0 0 24 24"><rect x="3.5" y="3.5" width="17" height="17" rx="4"/><path d="m10 8 6 4-6 4V8Z"/></svg>
+      </div>
+      <div class="tab" aria-label="태그된 게시물">
+        <svg viewBox="0 0 24 24"><path d="M20 13 13 20a2 2 0 0 1-2.8 0L4 13V4h9l7 7a1.4 1.4 0 0 1 0 2Z"/><circle cx="8.5" cy="8.5" r="1.2"/></svg>
+      </div>
+    </nav>
+
+    <section class="grid" id="feed" aria-label="강이든의 게시물">
+      <button class="post" type="button" data-index="1" aria-label="게시물 1 보기">
+        <img src="assets/feed-01.png" alt="유도복을 입고 금메달을 든 강이든" loading="eager">
+        <span class="multi-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><rect x="7" y="7" width="13" height="13" rx="2"/><path d="M16 7V5a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h2"/></svg></span>
+      </button>
+      <button class="post" type="button" data-index="2" aria-label="게시물 2 보기">
+        <img src="assets/feed-02.png" alt="커플 잠옷을 입고 도망가는 연인을 장난스럽게 바라보는 강이든" loading="lazy">
+      </button>
+      <button class="post" type="button" data-index="3" aria-label="게시물 3 보기">
+        <img src="assets/feed-03.png" alt="카페에서 연인과 다정하게 시간을 보내는 강이든" loading="lazy">
+        <span class="multi-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><rect x="7" y="7" width="13" height="13" rx="2"/><path d="M16 7V5a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h2"/></svg></span>
+      </button>
+    </section>
+    <div class="post-view" id="post-view" aria-hidden="true">
+      <article class="viewer" role="dialog" aria-modal="true" aria-label="게시물">
+        <header class="viewer-head">
+          <button class="viewer-back" id="viewer-back" type="button" aria-label="피드로 돌아가기">‹</button>
+          <img class="viewer-avatar" src="assets/avatar.jpg" alt="" onerror="this.style.opacity='0'">
+          <span id="viewer-username">eden_kang</span>
+        </header>
+        <div class="viewer-image-wrap" id="viewer-image-wrap">
+          <img class="viewer-image" id="viewer-image" src="" alt="">
+        </div>
+        <section class="viewer-copy">
+          <div class="viewer-caption">
+            <img class="viewer-avatar" src="assets/avatar.jpg" alt="" onerror="this.style.opacity='0'">
+            <p><strong id="caption-username">eden_kang</strong><span id="caption-text"></span><span class="caption-tags" id="caption-tags"></span></p>
+          </div>
+          <div class="viewer-comments" id="viewer-comments">댓글 모두 보기</div>
+          <div class="viewer-spacer"></div>
+          <div class="viewer-actions">
+            <div class="action-icons" aria-hidden="true"><span>♡</span><span>○</span><span>➤</span><span style="margin-left:auto">⌑</span></div>
+            <div class="viewer-likes" id="viewer-likes"></div>
+            <div class="viewer-time" id="viewer-time"></div>
+          </div>
+        </section>
+      </article>
+    </div>
+    <div class="delete-toast" id="delete-toast" role="status" aria-live="polite">피드가 삭제되었습니다</div>
+    <section class="dm-view" id="dm-view" aria-hidden="true">
+      <section class="dm-screen active" id="dm-inbox">
+        <header class="dm-header">
+          <button class="dm-back" id="close-dm" type="button" aria-label="프로필로 돌아가기">‹</button>
+          eden_kang
+        </header>
+        <div class="dm-inbox-content">
+          <h2 class="dm-inbox-title">메시지</h2>
+          <div class="dm-row-wrap">
+            <button class="dm-row" id="open-chat" type="button" aria-label="harin_jin 대화 열기">
+              <img class="dm-avatar" src="assets/new-photo.jpg" alt="" onerror="this.style.opacity='0'">
+              <span class="dm-row-copy">
+                <span class="dm-row-name">harin_jin</span>
+                <span class="dm-row-preview">이따 얼굴 보러 갈게 기다려</span>
+              </span>
+              <span class="dm-row-time">방금</span>
+            </button>
+          </div>
+          <div class="dm-row-wrap prune-target" data-prune>
+            <button class="dm-row" type="button" aria-label="{{user}} 대화">
+              <span class="dm-avatar dm-avatar-placeholder" aria-hidden="true">U</span>
+              <span class="dm-row-copy">
+                <span class="dm-row-name">{{user}}</span>
+                <span class="dm-row-preview">메시지</span>
+              </span>
+              <span class="dm-row-time">어제</span>
+            </button>
+          </div>
+          <div class="dm-row-wrap prune-target" data-prune>
+            <button class="dm-row" type="button" aria-label="최한성 대화">
+              <span class="dm-avatar dm-avatar-placeholder" aria-hidden="true">한</span>
+              <span class="dm-row-copy">
+                <span class="dm-row-name">최한성</span>
+                <span class="dm-row-preview">메시지</span>
+              </span>
+              <span class="dm-row-time">어제</span>
+            </button>
+          </div>
+          <p class="dm-unread">아직 읽지 않은 메시지 999+</p>
+        </div>
+      </section>
+      <section class="dm-screen" id="dm-thread">
+        <header class="dm-header dm-thread-header">
+          <button class="dm-back" id="thread-back" type="button" aria-label="메시지 목록으로 돌아가기">‹</button>
+          <img class="dm-avatar small" src="assets/new-photo.jpg" alt="" onerror="this.style.opacity='0'">
+          <strong>harin_jin</strong>
+        </header>
+        <div class="dm-messages" aria-label="harin_jin과의 메시지">
+          <p class="dm-time">오늘</p>
+          <div class="dm-bubble incoming"><span class="dm-speaker">하린</span>미안해 이든아... 나때문에...</div>
+          <div class="dm-bubble outgoing"><span class="dm-speaker">이든</span>그런 소리 하지마 내가 선택한거야 내가 책임져</div>
+          <div class="dm-bubble incoming"><span class="dm-speaker">하린</span>{{user}} 화 많이 났지...? 나 이제 어떡해... {{user}} 때문에 학교에서 매장 당하면...</div>
+          <div class="dm-bubble outgoing"><span class="dm-speaker">이든</span>너 건들면 내가 가만 안 있어</div>
+          <div class="dm-bubble incoming"><span class="dm-speaker">하린</span>고마워... 나 이제 정말... 너밖에 없어</div>
+          <div class="dm-bubble outgoing"><span class="dm-speaker">이든</span>이따 얼굴 보러 갈게 기다려</div>
+        </div>
+        <div class="dm-compose" aria-hidden="true"><span>메시지 보내기...</span><button type="button">♡</button></div>
+      </section>
+    </section>
+    <p class="sr-only" id="status" aria-live="polite"></p>
+  </main>
+
+  <script>
+    const feed = document.querySelector('#feed');
+    const postCount = document.querySelector('#post-count');
+    const status = document.querySelector('#status');
+    const postView = document.querySelector('#post-view');
+    const viewerImageWrap = document.querySelector('#viewer-image-wrap');
+    const viewerImage = document.querySelector('#viewer-image');
+    const captionText = document.querySelector('#caption-text');
+    const captionTags = document.querySelector('#caption-tags');
+    const viewerComments = document.querySelector('#viewer-comments');
+    const viewerLikes = document.querySelector('#viewer-likes');
+    const viewerTime = document.querySelector('#viewer-time');
+    const toast = document.querySelector('#delete-toast');
+    const dmView = document.querySelector('#dm-view');
+    const dmInbox = document.querySelector('#dm-inbox');
+    const dmThread = document.querySelector('#dm-thread');
+    const dmInboxContent = document.querySelector('.dm-inbox-content');
+    const captions = [
+      '오늘 목소리 가장 컸던 사람. 니꺼야.',
+      '니가 입자며. 왜 도망가 ㅋㅋ 커플잠옷 입자고 한 사람 너잖아.',
+      '내 전부, 내 행운, 내 공주님. 오늘도 네 옆에 딱 붙어 있기.'
+    ];
+    const hashtags = [
+      '#내응원단 #금메달 #유도국가대표 #니꺼야',
+      '#커플잠옷 #도망가지마 #커플스타그램 #오늘의추격전',
+      '#내전부 #내행운 #내공주님 #카페데이트'
+    ];
+    const likes = ['84,201', '76,509', '69,882'];
+    const dates = ['2025년 11월 18일', '2025년 10월 31일', '2025년 10월 12일'];
+    let remaining = 3;
+    let deleting = false;
+    let inboxPruned = false;
+
+    function pruneInboxRows() {
+      if (inboxPruned) return;
+      dmInboxContent.classList.add('pruning');
+      const rows = [...dmInbox.querySelectorAll('.dm-row-wrap[data-prune]')];
+      rows.forEach((row, index) => {
+        window.setTimeout(() => {
+          row.classList.add('is-deleting');
+          window.setTimeout(() => row.remove(), 520);
+        }, 350 + index * 360);
+      });
+      window.setTimeout(() => {
+        inboxPruned = true;
+        dmInboxContent.classList.remove('pruning');
+      }, 1450);
+    }
+
+    function showPlaceholder(parent) {
+      const placeholder = document.createElement('div');
+      placeholder.className = 'final-placeholder';
+      placeholder.innerHTML = '<div><div class="silhouette" aria-hidden="true"></div><span>새 사진이 올라왔습니다</span></div>';
+      parent.replaceChildren(placeholder);
+    }
+
+    function openViewer(post) {
+      viewerImage.classList.remove('vanish');
+      viewerImageWrap.replaceChildren(viewerImage);
+      const photo = post.querySelector('img');
+      if (photo) {
+        viewerImage.src = photo.currentSrc || photo.src;
+        viewerImage.alt = photo.alt || '새 게시물 사진';
+      } else {
+        const placeholder = post.querySelector('.final-placeholder');
+        if (placeholder) viewerImageWrap.replaceChildren(placeholder.cloneNode(true));
+      }
+
+      const isFinal = post.dataset.final === 'true';
+      const index = Number(post.dataset.index || 1) - 1;
+      document.querySelector('#viewer-username').textContent = 'eden_kang';
+      document.querySelector('#caption-username').textContent = 'eden_kang';
+      captionText.textContent = isFinal ? '요즘 내가 제일 신경 쓰이는 사람.' : captions[index];
+      captionTags.textContent = isFinal ? '#새로운시작' : hashtags[index];
+      viewerComments.textContent = isFinal ? '새로운 시작.' : '댓글 모두 보기';
+      viewerLikes.textContent = isFinal ? '좋아요 300만개' : `좋아요 ${likes[index]}개`;
+      viewerTime.textContent = isFinal ? '방금' : dates[index];
+      postView.classList.add('show');
+      postView.setAttribute('aria-hidden', 'false');
+    }
+
+    function closeViewer() {
+      postView.classList.remove('show');
+      postView.setAttribute('aria-hidden', 'true');
+    }
+
+    function revealNewPhoto() {
+      feed.replaceChildren();
+      const post = document.createElement('button');
+      post.type = 'button';
+      post.className = 'post final-post upload-pop';
+      post.dataset.final = 'true';
+      post.setAttribute('aria-label', '새 게시물 보기');
+      const photo = document.createElement('img');
+      photo.src = 'assets/new-photo.jpg';
+      photo.alt = '새로 올라온 여성의 사진';
+      photo.addEventListener('error', () => showPlaceholder(post), { once: true });
+      post.append(photo);
+      feed.append(post);
+      postCount.textContent = '1';
+      status.textContent = '새 게시물이 올라왔습니다.';
+    }
+
+    feed.addEventListener('click', (event) => {
+      const post = event.target.closest('.post');
+      if (!post || deleting) return;
+      if (post.dataset.final === 'true') {
+        openViewer(post);
+        return;
+      }
+
+      deleting = true;
+      openViewer(post);
+      window.setTimeout(() => {
+        viewerImage.classList.add('vanish');
+        window.setTimeout(() => {
+          post.remove();
+          remaining -= 1;
+          postCount.textContent = remaining;
+          toast.classList.add('show');
+          window.setTimeout(() => {
+            toast.classList.remove('show');
+            closeViewer();
+            deleting = false;
+            if (remaining === 0) window.setTimeout(revealNewPhoto, 420);
+          }, 1000);
+        }, 200);
+      }, 1500);
+    });
+
+    document.querySelector('#viewer-back').addEventListener('click', closeViewer);
+    document.querySelector('#open-dm').addEventListener('click', () => {
+      dmInbox.classList.add('active');
+      dmThread.classList.remove('active');
+      dmView.classList.add('show');
+      dmView.setAttribute('aria-hidden', 'false');
+      pruneInboxRows();
+    });
+    document.querySelector('#close-dm').addEventListener('click', () => {
+      dmView.classList.remove('show');
+      dmView.setAttribute('aria-hidden', 'true');
+    });
+    document.querySelector('#open-chat').addEventListener('click', () => {
+      dmInbox.classList.remove('active');
+      dmThread.classList.add('active');
+    });
+    document.querySelector('#thread-back').addEventListener('click', () => {
+      dmThread.classList.remove('active');
+      dmInbox.classList.add('active');
+    });
+    postView.addEventListener('click', (event) => {
+      if (event.target === postView) closeViewer();
+    });
+    document.addEventListener('keydown', (event) => {
+      if (event.key === 'Escape' && postView.classList.contains('show')) closeViewer();
+      if (event.key === 'Escape' && dmView.classList.contains('show')) {
+        if (dmThread.classList.contains('active')) {
+          dmThread.classList.remove('active');
+          dmInbox.classList.add('active');
+        } else {
+          dmView.classList.remove('show');
+          dmView.setAttribute('aria-hidden', 'true');
+        }
+      }
+    });
+  </script>
+</body>
+</html>
